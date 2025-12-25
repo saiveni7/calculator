@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register | Carbon Footprint</title>
+  <style>
+    /* Your CSS from the register file goes here */
+    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #dcedc8, #b2dfdb); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .register-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: 350px; text-align: center; }
+    h1 { color: #2a7f62; margin-bottom: 20px; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; }
+    button { width: 100%; padding: 10px; background-color: #2a7f62; color: white; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+    p { color: #555; font-size: 14px; }
+    a { color: #2a7f62; text-decoration: none; font-weight: bold; }
+    .errors { color: red; list-style-type: none; padding: 0; }
+  </style>
+</head>
+<body>
+  <div class="register-box">
+    <h1>🌿 Register</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Register</button>
+    </form>
+    {% if form.errors %}
+      <ul class="errors">
+        {% for field in form %}
+          {% for error in field.errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+  </div>
+</body>
+</html>

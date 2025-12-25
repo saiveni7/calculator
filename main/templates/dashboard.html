@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; }
+        .container { max-width: 900px; margin: 40px auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #2a7f62; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #e8f5e9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Your Carbon Footprint History</h1>
+        <p><a href="{% url 'calculator' %}">← Back to Calculator</a></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Transport (kg)</th>
+                    <th>Energy (kg)</th>
+                    <th>Food (kg)</th>
+                    <th>Lifestyle (kg)</th>
+                    <th>Total Weekly (kg)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for calc in calculations %}
+                <tr>
+                    <td>{{ calc.created_at|date:"Y-m-d" }}</td>
+                    <td>{{ calc.transport_emissions|floatformat:1 }}</td>
+                    <td>{{ calc.energy_emissions|floatformat:1 }}</td>
+                    <td>{{ calc.food_emissions|floatformat:1 }}</td>
+                    <td>{{ calc.lifestyle_emissions|floatformat:1 }}</td>
+                    <td><strong>{{ calc.total_emissions|floatformat:1 }}</strong></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">You have no saved calculations yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

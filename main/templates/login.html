@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Carbon Footprint</title>
+  <style>
+    /* Your CSS from the login file goes here */
+    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #e0f7fa, #e8f5e9); display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+    .login-box { background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); width: 350px; text-align: center; }
+    h1 { color: #2a7f62; margin-bottom: 20px; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; }
+    button { width: 100%; padding: 10px; background-color: #2a7f62; color: white; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+    p { font-size: 14px; color: #555; }
+    a { color: #2a7f62; text-decoration: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h1>🌍 Login</h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Login</button>
+    </form>
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color:red;">❌ {{ message }}</p>
+        {% endfor %}
+    {% endif %}
+    <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+  </div>
+</body>
+</html>

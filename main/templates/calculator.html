@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Carbon Footprint Calculator</title>
+<style>
+/* All your CSS styles go here */
+body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #333; margin: 0; padding: 0; }
+.container { max-width: 750px; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 40px auto; }
+h1 { text-align: center; color: #2a7f62; }
+.subtitle { text-align: center; color: #666; margin-bottom: 25px; }
+.category { margin-bottom: 25px; }
+.category h2 { color: #2a7f62; margin-bottom: 10px; }
+label { display: block; margin: 8px 0 4px; font-weight: 500; }
+input, select { width: 100%; padding: 8px; margin-bottom: 8px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+button { padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+.calculate-btn { background-color: #2a7f62; color: white; }
+.reset-btn { background-color: #e74c3c; color: white; margin-left: 10px; }
+.button-group { text-align: center; margin-top: 20px; }
+.results { margin-top: 30px; }
+.result-card { background: #f9fafb; border-left: 5px solid #2a7f62; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+.result-card h3 { margin: 0 0 8px; color: #2a7f62; }
+.total-box { background: #e8f5e9; border-left: 6px solid #1b5e20; padding: 15px; border-radius: 10px; margin-top: 20px; text-align: center; }
+#tipsContainer { background: #fff8e1; border-left: 5px solid #fbc02d; border-radius: 10px; padding: 15px; margin-top: 25px; }
+#tipsContainer p { margin: 8px 0; }
+.user-nav a { color: #2a7f62; text-decoration: none; font-weight: bold; }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🌍 Weekly Carbon Footprint Calculator</h1>
+    
+    <p class="subtitle user-nav">
+        Welcome, <strong>{{ user.username }}</strong>! | 
+        <a href="{% url 'dashboard' %}">View Dashboard</a> | 
+        <a href="{% url 'logout' %}">Logout</a>
+    </p>
+
+    <form method="post" action="{% url 'calculator' %}">
+        {% csrf_token %}
+
+        <div class="category">
+            <h2>🚗 Transportation</h2>
+            <label>Car miles driven this week</label>
+            <input type="number" name="carMiles" placeholder="e.g., 230" min="0">
+            <label>Car fuel type</label>
+            <select name="carType">
+                <option value="0.79">Gasoline</option>
+                <option value="0.88">Diesel</option>
+                <option value="0.3">Hybrid</option>
+                <option value="0.1">Electric</option>
+            </select>
+            <label>Public transport trips</label>
+            <input type="number" name="publicTransport" placeholder="e.g., 10" min="0">
+            <label>Flight hours</label>
+            <input type="number" name="flights" placeholder="e.g., 0" min="0">
+        </div>
+
+        <div class="category">
+            <h2>⚡ Home Energy</h2>
+            <label>Electricity usage (kWh)</label>
+            <input type="number" name="electricity" placeholder="e.g., 210" min="0">
+            <label>Natural gas (therms)</label>
+            <input type="number" name="naturalGas" placeholder="e.g., 10" min="0">
+            <label>Renewable energy used</label>
+            <select name="renewable">
+                <option value="0">No renewable</option>
+                <option value="25">25%</option>
+                <option value="50">50%</option>
+                <option value="75">75%</option>
+                <option value="100">100%</option>
+            </select>
+        </div>
+
+        <div class="category">
+            <h2>🍽 Diet & Food</h2>
+            <label>Meals with red meat</label>
+            <input type="number" name="redMeat" placeholder="e.g., 5" min="0">
+            <label>Meals with chicken/fish</label>
+            <input type="number" name="poultry" placeholder="e.g., 7" min="0">
+            <label>Plant-based meals</label>
+            <input type="number" name="plantBased" placeholder="e.g., 9" min="0">
+            <label>Food waste (lbs)</label>
+            <input type="number" name="foodWaste" placeholder="e.g., 5" min="0">
+            <label>Locally sourced food</label>
+            <select name="localFood">
+                <option value="0">Rarely</option>
+                <option value="25">Sometimes</option>
+                <option value="50">Often</option>
+                <option value="75">Mostly</option>
+            </select>
+        </div>
+
+        <div class="category">
+            <h2>🛍 Lifestyle</h2>
+            <label>New clothing items</label>
+            <input type="number" name="clothing" placeholder="e.g., 0" min="0">
+            <label>Online deliveries</label>
+            <input type="number" name="deliveries" placeholder="e.g., 2" min="0">
+            <label>Electronics purchased</label>
+            <input type="number" name="electronics" placeholder="e.g., 0" min="0">
+            <label>Recycling habits</label>
+            <select name="recycling">
+                <option value="0">None</option>
+                <option value="0.3">Some</option>
+                <option value="0.7">Most</option>
+                <option value="1">All</option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="calculate-btn">Calculate</button>
+            <button type="reset" class="reset-btn">Reset</button>
+        </div>
+    </form>
+
+    {% if results %}
+    <div id="results" class="results" style="display: block;">
+        <div class="result-card">
+            <h3>🚗 Transportation</h3>
+            <p><strong>{{ results.transport|floatformat:1 }}</strong> kg CO₂ this week</p>
+        </div>
+
+        <div class="result-card">
+            <h3>⚡ Home Energy</h3>
+            <p><strong>{{ results.energy|floatformat:1 }}</strong> kg CO₂ this week</p>
+        </div>
+
+        <div class="result-card">
+            <h3>🍽 Food</h3>
+            <p><strong>{{ results.food|floatformat:1 }}</strong> kg CO₂ this week</p>
+        </div>
+
+        <div class="result-card">
+            <h3>🛍 Lifestyle</h3>
+            <p><strong>{{ results.lifestyle|floatformat:1 }}</strong> kg CO₂ this week</p>
+        </div>
+
+        <div class="total-box">
+            <h2>Total Weekly Footprint</h2>
+            <h1>{{ results.total|floatformat:1 }} kg CO₂</h1>
+            <p>Projected Annual: <strong>{{ results.annual|floatformat:1 }}</strong> tons CO₂</p>
+        </div>
+
+        <div id="tipsContainer">
+            {% if results.total <= 38.5 %}
+            <div style="background:#e8f5e9;border-left:5px solid #1b5e20;padding:15px;border-radius:10px;">
+                <h3>✅ OK — no CO₂ emission problem!</h3>
+                <p>Your weekly footprint is <strong>{{ results.total|floatformat:1 }} kg</strong>, below the safe limit of <strong>38.5 kg/week</strong>.</p>
+            </div>
+            {% else %}
+            <div style="background:#ffebee;border-left:5px solid #b71c1c;padding:15px;border-radius:10px;">
+                <h3>⚠ High CO₂ Emission!</h3>
+                <p>Your weekly footprint is <strong>{{ results.total|floatformat:1 }} kg</strong>, above the safe limit of <strong>38.5 kg/week</strong>.</p>
+                <h4>🌱 Tips to Reduce:</h4>
+                <ul style="margin-left:18px;">
+                    <li>Use public transport or cycle short distances.</li>
+                    <li>Reduce electricity and gas usage at home.</li>
+                    <li>Eat fewer red meat meals — go plant-based more often.</li>
+                    <li>Buy fewer new clothes and electronics.</li>
+                    <li>Recycle regularly and avoid waste.</li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+  </div>
+</body>
+</html>
